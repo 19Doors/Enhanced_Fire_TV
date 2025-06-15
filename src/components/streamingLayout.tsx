@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 
@@ -16,13 +16,29 @@ export default function StreamingLayout({
 }: StreamingLayoutProps) {
   let content = data.content;
   const cardRef = useRef(null);
+  const heroRef = useRef(null);
+
+  let [currentBackdrop, setCurrentBackdrop] = useState(0);
+
+  useGSAP(() => {
+    gsap.fromTo(heroRef.current, { x: -200 }, { x: 0 });
+  }, [currentBackdrop]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentBackdrop((prev) => (prev + 1) % content.length);
+    }, 5000);
+  }, [content.length]);
+
+  const currentContent = content[currentBackdrop];
 
   return (
     <div className="min-h-screen bg-black">
       <div className="relative h-100 mb-8">
         <Image
-          src={content[0].backdrop_url}
-          alt={content[0].title}
+          src={currentContent.backdrop_url}
+          alt={currentContent.title}
+          ref={heroRef}
           fill
           className="object-cover"
         />
@@ -33,10 +49,10 @@ export default function StreamingLayout({
         </div>
         <div className="absolute bottom-0 p-4 z-1">
           <h1 className="text-white font-inter font-bold text-2xl mb-6">
-            {content[0].title}
+            {content[currentBackdrop].title}
           </h1>
           <p className="font-inter text-white text-sm overflow-auto max-w-1/2">
-            {content[0].overview}
+            {content[currentBackdrop].overview}
           </p>
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-black/30" />
