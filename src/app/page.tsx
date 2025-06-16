@@ -1,103 +1,99 @@
+"use client";
 import Image from "next/image";
+import netflixData from "../data/netflix_content.json";
+import primeData from "../data/prime_video_content.json";
+import hotstarData from "../data/hotstar_content.json";
+import gsap from "gsap";
+import Link from "next/link";
+import HomeContentCards from "@/components/home_content_cards";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  let netflixContent = netflixData.content;
+  let primeContent = primeData.content;
+  let hotstarContent = hotstarData.content;
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  return (
+    <div className="flex flex-col min-h-screen bg-black space-y-4">
+      <div className="relative inset-0 aspect-16/6">
+        <div className="absolute z-1 p-8">
+          <Image
+            src={"./FIRE-TV-2024.svg"}
+            alt="fireTV"
+            width={100}
+            height={100}
+          />
+        </div>
+        <Image
+          src={netflixContent[0].backdrop_url}
+          alt={netflixContent[0].title}
+          fill
+          className="object-cover"
+        />
+        <div className="absolute bottom-0 p-4 px-8 z-1 text-peri">
+          <h1 className="text-white font-inter font-bold text-2xl mb-6">
+            {netflixContent[0].title}
+          </h1>
+          <p className="font-inter text-white text-sm overflow-auto max-w-1/2">
+            {netflixContent[0].overview}
+          </p>
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-black/30" />
+      </div>
+      <div className="flex justify-between items-center px-8">
+        <div>
+          <p className="font-inter text-[#D8DCFF] text-2xl font-bold">Home</p>
+        </div>
+        <div className="flex grow items-center gap-4 justify-end">
+          <Link href="/netflix" className="relative w-30 h-20 cursor-pointer">
+            <Image
+              src={"/netflix.png"}
+              alt="netflix"
+              fill
+              className="object-contain bg-white p-1 rounded border-[#db0000] border-3"
+              onMouseEnter={(e) => {
+                gsap.to(e.currentTarget, { scale: 1.1, duration: 0.2 });
+              }}
+              onMouseLeave={(e) => {
+                gsap.to(e.currentTarget, { scale: 1, duration: 0.2 });
+              }}
+            />
+          </Link>
+          <Link
+            href="/prime"
+            className="relative w-30 h-20 rounded cursor-pointer"
           >
             <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+              src={"/prime.webp"}
+              alt="hotstar"
+              fill
+              className="object-contain rounded p-2 border-[#1998FF] border-3"
+              onMouseEnter={(e) => {
+                gsap.to(e.currentTarget, { scale: 1.1 });
+              }}
+              onMouseLeave={(e) => {
+                gsap.to(e.currentTarget, { scale: 1 });
+              }}
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          </Link>
+          <Link href="/hotstar" className="relative w-30 h-20 cursor-pointer">
+            <Image
+              src={"/hotstar.webp"}
+              alt="hotstar"
+              fill
+              className="object-contain bg-white p-3 rounded border-[#0B6879] border-3"
+              onMouseEnter={(e) => {
+                gsap.to(e.currentTarget, { scale: 1.1 });
+              }}
+              onMouseLeave={(e) => {
+                gsap.to(e.currentTarget, { scale: 1 });
+              }}
+            />
+          </Link>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
+      <HomeContentCards title="Popular on Netflix" content={netflixContent}/>
+      <HomeContentCards title="Popular on PrimeVideo" content={primeContent}/>
+      <HomeContentCards title="Popular on Hotstar" content={hotstarContent}/>
     </div>
   );
 }

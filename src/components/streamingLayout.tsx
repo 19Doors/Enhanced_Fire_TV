@@ -66,7 +66,7 @@ export default function StreamingLayout({
             <div
               key={c.id}
               ref={cardRef}
-              className="relative cursor-pointer aspect-[2/3] overflow-hidden"
+              className="relative cursor-pointer aspect-2/3 overflow-hidden"
               onMouseEnter={(e) => {
                 gsap.to(e.currentTarget, { scale: 1.1 });
               }}
