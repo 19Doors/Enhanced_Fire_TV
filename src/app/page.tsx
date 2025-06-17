@@ -6,11 +6,58 @@ import hotstarData from "../data/hotstar_content.json";
 import gsap from "gsap";
 import Link from "next/link";
 import HomeContentCards from "@/components/home_content_cards";
+import { useEffect, useState } from "react";
+import {
+  getContentHotstar,
+  getContentNetflix,
+  getContentPrime,
+} from "@/lib/content";
 
 export default function Home() {
-  let netflixContent = netflixData.content;
-  let primeContent = primeData.content;
-  let hotstarContent = hotstarData.content;
+  const [content, setContent] = useState({
+    netflix: [],
+    prime: [],
+    hotstar: [],
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchAllContent() {
+      try {
+        setLoading(true);
+        const [netflixContent, primeContent, hotstarContent] =
+          await Promise.all([
+            getContentNetflix(),
+            getContentPrime(),
+            getContentHotstar(),
+          ]);
+
+        setContent({
+          netflix: netflixContent,
+          prime: primeContent,
+          hotstar: hotstarContent,
+        });
+      } catch (error) {
+        console.error("Error fetching content:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchAllContent();
+  }, []);
+
+  let netflixContent = content.netflix.content;
+  let hotstarContent = content.hotstar.content;
+  let primeContent = content.prime.content;
+
+  if (loading) {
+    return (
+      <div className="loading-state">
+        <h2>Loading Fire TV content...</h2>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-black space-y-4">
@@ -91,9 +138,9 @@ export default function Home() {
           </Link>
         </div>
       </div>
-      <HomeContentCards title="Popular on Netflix" content={netflixContent}/>
-      <HomeContentCards title="Popular on PrimeVideo" content={primeContent}/>
-      <HomeContentCards title="Popular on Hotstar" content={hotstarContent}/>
+      <HomeContentCards title="Popular on Netflix" content={netflixContent} />
+      <HomeContentCards title="Popular on PrimeVideo" content={primeContent} />
+      <HomeContentCards title="Popular on Hotstar" content={hotstarContent} />
     </div>
   );
 }

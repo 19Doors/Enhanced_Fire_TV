@@ -1,11 +1,22 @@
-"use client"
+"use client";
 import StreamingLayout from "@/components/streamingLayout";
-import primeContent from "../../data/prime_video_content.json";
+import { getContentPrime } from "@/lib/content";
+import { useEffect, useState } from "react";
 
 export default function Prime() {
-  return(
+  const [primeData, setPrimeData] = useState({"content":[]});
+  useEffect(() => {
+    async function fetchPrimeContent() {
+      try {
+        const content = await getContentPrime();
+        setPrimeData(content);
+      } catch (e) {}
+    }
+    fetchPrimeContent();
+  },[]);
+  return (
     <>
-      <StreamingLayout data={primeContent} config={{name:"PrimeVideo"}}/>
+      <StreamingLayout data={primeData} config={{ name: "PrimeVideo" }} />
     </>
-  )
+  );
 }

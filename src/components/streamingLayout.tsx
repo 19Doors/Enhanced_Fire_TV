@@ -31,6 +31,9 @@ export default function StreamingLayout({
   }, [content.length]);
 
   const currentContent = content[currentBackdrop];
+  if (content.length == 0) {
+    return <>/</>;
+  }
 
   return (
     <div className="min-h-screen bg-black">
