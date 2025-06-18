@@ -6,7 +6,7 @@ import hotstarData from "../data/hotstar_content.json";
 import gsap from "gsap";
 import Link from "next/link";
 import HomeContentCards from "@/components/home_content_cards";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   getContentHotstar,
   getContentNetflix,
@@ -39,8 +39,9 @@ export default function Home() {
         });
       } catch (error) {
         console.error("Error fetching content:", error);
+	setLoading(false);
       } finally {
-        setLoading(false);
+	setLoading(false);
       }
     }
 
@@ -51,15 +52,20 @@ export default function Home() {
   let hotstarContent = content.hotstar.content;
   let primeContent = content.prime.content;
 
+  let loadingRef = useRef(null);
+
   if (loading) {
     return (
-      <div className="bg-black flex min-h-screen w-full items-center justify-center">
-          <Image
-            src={"./FIRE-TV-2024.svg"}
-            alt="fireTV"
-            width={300}
-            height={300}
-          />
+      <div
+        ref={loadingRef}
+        className="bg-black flex min-h-screen w-full items-center justify-center"
+      >
+        <Image
+          src={"./FIRE-TV-2024.svg"}
+          alt="fireTV"
+          width={300}
+          height={300}
+        />
       </div>
     );
   }
