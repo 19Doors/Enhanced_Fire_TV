@@ -53,8 +53,13 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className="loading-state">
-        <h2>Loading Fire TV content...</h2>
+      <div className="bg-black flex min-h-screen w-full items-center justify-center">
+          <Image
+            src={"./FIRE-TV-2024.svg"}
+            alt="fireTV"
+            width={300}
+            height={300}
+          />
       </div>
     );
   }
