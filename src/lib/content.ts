@@ -1,22 +1,23 @@
 "use server";
 
+let init_url = "http://35.244.41.155:8080"
 export async function getContentNetflix() {
   let response = await fetch(
-    "http://localhost:8080/content-aggregation/getContentNetflix",
+    init_url+"/content-aggregation/getContentNetflix",
   );
   const data = await response.json();
   return data;
 }
 export async function getContentPrime() {
   let response = await fetch(
-    "http://localhost:8080/content-aggregation/getContentPrime",
+    init_url+"/content-aggregation/getContentPrime",
   );
   const data = await response.json();
   return data;
 }
 export async function getContentHotstar() {
   let response = await fetch(
-    "http://localhost:8080/content-aggregation/getContentHotstar",
+    init_url+"/content-aggregation/getContentHotstar",
   );
   const data = await response.json();
   return data;
@@ -61,7 +62,7 @@ export async function userInteraction(interaction) {
   }
   console.log(toSend);
   let response = await fetch(
-    "http://localhost:8080/content-aggregation/track-interaction",
+    init_url+"/content-aggregation/track-interaction",
     {
       method: "POST",
       headers: { "Content-type": "application/json" },
