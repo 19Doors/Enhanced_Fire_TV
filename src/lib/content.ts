@@ -23,21 +23,42 @@ export async function getContentHotstar() {
 }
 
 export async function userInteraction(interaction) {
-  let toSend = {
-    user_id: "01",
-    interaction_type: interaction.type,
-    content_id: interaction.context_data.id,
-    content_type: interaction.context_data.type,
-    content_platform: interaction.context_data.platform,
-    context_data: {
-      title: interaction.context_data.title,
-      rating: interaction.context_data.rating,
-      mood_tags: interaction.context_data.mood_tags,
-      genres: interaction.context_data.genres,
-      release_date: interaction.context_data.release_date,
-      overview: interaction.context_data.overview
-    }
-  };
+  let toSend = {};
+  console.log(interaction);
+  if (interaction.watchTime == 0) {
+    toSend = {
+      user_id: "01",
+      interaction_type: interaction.type,
+      content_id: interaction.context_data.id,
+      content_type: interaction.context_data.type,
+      content_platform: interaction.context_data.platform,
+      context_data: {
+        title: interaction.context_data.title,
+        rating: interaction.context_data.rating,
+        mood_tags: interaction.context_data.mood_tags,
+        genres: interaction.context_data.genres,
+        release_date: interaction.context_data.release_date,
+        overview: interaction.context_data.overview,
+      },
+    };
+  } else {
+    toSend = {
+      user_id: "01",
+      interaction_type: interaction.type,
+      content_id: interaction.context_data.id,
+      content_type: interaction.context_data.type,
+      content_platform: interaction.context_data.platform,
+      watchProgress: interaction.watchProgress,
+      context_data: {
+        title: interaction.context_data.title,
+        rating: interaction.context_data.rating,
+        mood_tags: interaction.context_data.mood_tags,
+        genres: interaction.context_data.genres,
+        release_date: interaction.context_data.release_date,
+        overview: interaction.context_data.overview,
+      },
+    };
+  }
   console.log(toSend);
   let response = await fetch(
     "http://localhost:8080/content-aggregation/track-interaction",
