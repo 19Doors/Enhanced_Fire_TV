@@ -12,6 +12,7 @@ import {
   getContentNetflix,
   getContentPrime,
 } from "@/lib/content";
+import { createRoom } from "@/lib/room";
 
 export default function Home() {
   const [content, setContent] = useState({
@@ -20,6 +21,10 @@ export default function Home() {
     hotstar: [],
   });
   const [loading, setLoading] = useState(true);
+
+  const createRoomFunc = async () => {
+    await createRoom();
+  }
 
   useEffect(() => {
     async function fetchAllContent() {
@@ -39,9 +44,9 @@ export default function Home() {
         });
       } catch (error) {
         console.error("Error fetching content:", error);
-	setLoading(false);
+        setLoading(false);
       } finally {
-	setLoading(false);
+        setLoading(false);
       }
     }
 
@@ -98,8 +103,9 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-black/30" />
       </div>
       <div className="flex justify-between items-center px-8">
-        <div>
-          <p className="font-inter text-[#D8DCFF] text-2xl font-bold">Home</p>
+        <div className="flex space-x-4">
+          <p className="font-inter text-[#D8DCFF] text-lg font-bold border rounded p-2 cursor-pointer hover:underline">Home</p>
+          <p className="font-inter text-[#D8DCFF] text-lg font-bold border rounded p-2 cursor-pointer hover:underline" onClick={()=>createRoomFunc()}>Create Room</p>
         </div>
         <div className="flex grow items-center gap-4 justify-end">
           <Link href="/netflix" className="relative w-30 h-20 cursor-pointer">

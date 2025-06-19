@@ -26,7 +26,7 @@ export async function getContentHotstar() {
 export async function userInteraction(interaction) {
   let toSend = {};
   console.log(interaction);
-  if (interaction.watchTime == 0) {
+  if (!interaction.watchTime) {
     toSend = {
       user_id: "01",
       interaction_type: interaction.type,
