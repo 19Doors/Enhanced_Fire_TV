@@ -1,6 +1,7 @@
 "use server";
 
-let init_url = "http://35.244.41.155:8080"
+// let init_url = "http://35.244.41.155:8080"
+let init_url = "http://34.47.135.240:8080"
 // let init_url = "http://localhost:8080"
 export async function getContentNetflix() {
   let response = await fetch(
