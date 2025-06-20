@@ -8,11 +8,13 @@ const JoinModal = ({ isOpen, onClose }) => {
   const modalRef = useRef(null);
   const backdropRef = useRef(null);
   const contentRef = useRef(null);
+  const wsRef = useRef(null);
 
   const [roomCode, setRoomCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [joinedRoom, setJoinedRoom] = useState(false);
   const [content, setContent] = useState({});
+  const [isConnect, setIsConnected] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -55,10 +57,11 @@ const JoinModal = ({ isOpen, onClose }) => {
 
   const handleBackdropClick = (e) => {
     if (e.target === e.currentTarget) {
-      setRoomCode("")
-      setIsLoading(false)
-      setJoinedRoom(false)
-      setContent({})
+      wsRef.current.close()
+      setRoomCode("");
+      setIsLoading(false);
+      setJoinedRoom(false);
+      setContent({});
       onClose();
     }
   };
@@ -74,11 +77,37 @@ const JoinModal = ({ isOpen, onClose }) => {
     setIsLoading(true);
     try {
       const data = await joinRoom(roomCode);
-      setContent(data.room.content);
+      if (data.success) {
+        setContent(data.room.content);
+	connectWebSocket();
+      }
     } catch (error) {}
     setIsLoading(false);
     setJoinedRoom(true);
   };
+
+  const connectWebSocket = () => {
+    const wsUrl = `ws://localhost:8080/social-viewing/ws/watch/${roomCode}`;
+    wsRef.current = new WebSocket(wsUrl);
+    console.log("connected!")
+
+    wsRef.current.onopen = () => {
+      setIsConnected(true)
+    };
+
+    wsRef.current.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      console.log(message)
+    }
+
+    wsRef.current.onclose = () => {
+      setIsConnected(false);
+      console.log("disconnected")
+    }
+  };
+
+  const handleWebSocketMessage = (message) => {
+  }
 
   if (!isOpen) return null;
 
@@ -107,7 +136,7 @@ const JoinModal = ({ isOpen, onClose }) => {
                 className="object-cover"
               />
             </div>
-	    
+
             <div className="w-2/3 h-full flex flex-col">
               <div className="w-full h-full p-4 flex flex-col space-y-2">
                 <h1 className="font-inter text-white text-2xl font-bold ">

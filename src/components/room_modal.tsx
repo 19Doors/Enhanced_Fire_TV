@@ -72,11 +72,31 @@ const RoomModal = ({ isOpen, onClose, mode, content }) => {
     try {
       const data = await createRoom(roomName,content.id,content);
       setRoomCode(data.room_id);
+      connectWebSocket(data.room_id);
     } catch (error) {
     } finally {
       setIsLoading(false);
     }
   };
+
+  const connectWebSocket = (room_id:string) => {
+    const wsUrl = `ws://localhost:8080/social-viewing/ws/watch/${room_id}`;
+    let wsRef = new WebSocket(wsUrl);
+
+    wsRef.onopen = () => {
+      console.log("connected!")
+    };
+
+    wsRef.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      console.log(message)
+    }
+
+    wsRef.onclose = () => {
+      console.log("disconnected!")
+    }
+
+  }
 
   if (!isOpen) return null;
 
