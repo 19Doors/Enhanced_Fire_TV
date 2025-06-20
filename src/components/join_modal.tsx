@@ -152,7 +152,7 @@ const JoinModal = ({ isOpen, onClose }) => {
 
   const connectWebSocket = () => {
     // const wsUrl = `ws://127.0.0.1:8000/ws/watch/${roomCode}`;
-    const wsUrl = `ws://localhost:3002/ws/watch/${roomCode}`;
+    const wsUrl = `ws://35.244.41.155:3002/ws/watch/${room_id}`;
     wsRef.current = new WebSocket(wsUrl);
     console.log("connected!");
 
