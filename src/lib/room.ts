@@ -1,7 +1,7 @@
 "use server";
 
 // let init_url = "http://35.244.41.155:3002";
-let init_url = "http://34.47.135.240:8080"
+let init_url = "http://34.47.135.240:3002"
 // let init_url = "http://127.0.0.1:8000";
 export async function createRoom(room_name, content_id, content) {
   let toSend = {
