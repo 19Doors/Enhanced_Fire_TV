@@ -11,10 +11,12 @@ import {
   ThumbsDown,
   ThumbsUp,
   Timer,
+  UserRoundPlus,
 } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { FaPlay } from "react-icons/fa";
+import RoomModal from "./room_modal";
 
 const ContentModal = ({ content, isOpen, onClose }) => {
   const modalRef = useRef(null);
@@ -25,6 +27,13 @@ const ContentModal = ({ content, isOpen, onClose }) => {
   const [progress, setProgress] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
+  const [showRoomModal, setShowRoomModal] = useState(false);
+  const [roomMode, setRoomMode] = useState("create");
+
+  const handleCreateRoom = () => {
+    setRoomMode("create");
+    setShowRoomModal(true);
+  };
 
   useEffect(() => {
     if (isOpen) {
@@ -82,7 +91,7 @@ const ContentModal = ({ content, isOpen, onClose }) => {
           type: "watch",
           context_data: content,
           watchProgress: progress,
-	  watchTime: currentTime,
+          watchTime: currentTime,
         };
         await userInteraction(interaction);
       }
@@ -234,6 +243,19 @@ const ContentModal = ({ content, isOpen, onClose }) => {
                       Dislike
                     </p>
                   </div>
+                  <div
+                    className="flex space-x-1 items-center p-4 cursor-pointer"
+                    onMouseEnter={(e) => {
+                      gsap.to(e.currentTarget, { scale: 1.2, duration: 0.2 });
+                    }}
+                    onMouseLeave={(e) => {
+                      gsap.to(e.currentTarget, { scale: 1.0, duration: 0.2 });
+                    }}
+                  >
+                    <p className="font-bold font-inter text-white capitalize" onClick={()=>handleCreateRoom()}>
+                      <UserRoundPlus color="#ffffff" />
+                    </p>
+                  </div>
                 </div>
               </div>
             )}
@@ -325,6 +347,13 @@ const ContentModal = ({ content, isOpen, onClose }) => {
           </div>
         )}
       </div>
+
+      <RoomModal
+        isOpen={showRoomModal}
+        onClose={() => setShowRoomModal(false)}
+        mode={roomMode}
+	content={content}
+      />
     </div>
   );
 };

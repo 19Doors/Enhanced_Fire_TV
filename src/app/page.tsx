@@ -1,8 +1,5 @@
 "use client";
 import Image from "next/image";
-import netflixData from "../data/netflix_content.json";
-import primeData from "../data/prime_video_content.json";
-import hotstarData from "../data/hotstar_content.json";
 import gsap from "gsap";
 import Link from "next/link";
 import HomeContentCards from "@/components/home_content_cards";
@@ -12,7 +9,7 @@ import {
   getContentNetflix,
   getContentPrime,
 } from "@/lib/content";
-import { createRoom } from "@/lib/room";
+import JoinModal from "@/components/join_modal";
 
 export default function Home() {
   const [content, setContent] = useState({
@@ -21,10 +18,11 @@ export default function Home() {
     hotstar: [],
   });
   const [loading, setLoading] = useState(true);
+  const [showJoinModal, setShowJoinModal] = useState(false);
 
-  const createRoomFunc = async () => {
-    await createRoom();
-  }
+  const handleJoinRoom = () => {
+    setShowJoinModal(true);
+  };
 
   useEffect(() => {
     async function fetchAllContent() {
@@ -44,7 +42,6 @@ export default function Home() {
         });
       } catch (error) {
         console.error("Error fetching content:", error);
-        setLoading(false);
       } finally {
         setLoading(false);
       }
@@ -53,18 +50,13 @@ export default function Home() {
     fetchAllContent();
   }, []);
 
-  let netflixContent = content.netflix.content;
-  let hotstarContent = content.hotstar.content;
-  let primeContent = content.prime.content;
-
-  let loadingRef = useRef(null);
+  let netflixContent = content.netflix.content || [];
+  let hotstarContent = content.hotstar.content || [];
+  let primeContent = content.prime.content || [];
 
   if (loading) {
     return (
-      <div
-        ref={loadingRef}
-        className="bg-black flex min-h-screen w-full items-center justify-center"
-      >
+      <div className="bg-black flex min-h-screen w-full items-center justify-center">
         <Image
           src={"./FIRE-TV-2024.svg"}
           alt="fireTV"
@@ -77,8 +69,9 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-screen bg-black space-y-4">
+      {/* Hero Section */}
       <div className="relative inset-0 aspect-16/6">
-        <div className="absolute z-1 p-8">
+        <div className="absolute z-10 p-8">
           <Image
             src={"./FIRE-TV-2024.svg"}
             alt="fireTV"
@@ -86,27 +79,39 @@ export default function Home() {
             height={100}
           />
         </div>
-        <Image
-          src={netflixContent[0].backdrop_url}
-          alt={netflixContent[0].title}
-          fill
-          className="object-cover"
-        />
-        <div className="absolute bottom-0 p-4 px-8 z-1 text-peri">
-          <h1 className="text-white font-inter font-bold text-2xl mb-6">
-            {netflixContent[0].title}
-          </h1>
-          <p className="font-inter text-white text-sm overflow-auto max-w-1/2">
-            {netflixContent[0].overview}
-          </p>
-        </div>
+        {netflixContent[0] && (
+          <>
+            <Image
+              src={netflixContent[0].backdrop_url}
+              alt={netflixContent[0].title}
+              fill
+              className="object-cover"
+            />
+            <div className="absolute bottom-0 p-4 px-8 z-10">
+              <h1 className="text-white font-inter font-bold text-2xl mb-6">
+                {netflixContent[0].title}
+              </h1>
+              <p className="font-inter text-white text-sm overflow-auto max-w-1/2">
+                {netflixContent[0].overview}
+              </p>
+            </div>
+          </>
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-black/30" />
       </div>
+
+      {/* Navigation Bar */}
       <div className="flex justify-between items-center px-8">
         <div className="flex space-x-4">
-          <p className="font-inter text-[#D8DCFF] text-lg font-bold border rounded p-2 cursor-pointer hover:underline">Home</p>
-          <p className="font-inter text-[#D8DCFF] text-lg font-bold border rounded p-2 cursor-pointer hover:underline" onClick={()=>createRoomFunc()}>Create Room</p>
+          <button
+            onClick={handleJoinRoom}
+            className="font-inter text-[#D8DCFF] text-lg font-bold border rounded p-2 cursor-pointer hover:underline"
+          >
+            <span>Join Room</span>
+          </button>
         </div>
+
+        {/* Platform Links */}
         <div className="flex grow items-center gap-4 justify-end">
           <Link href="/netflix" className="relative w-30 h-20 cursor-pointer">
             <Image
@@ -128,7 +133,7 @@ export default function Home() {
           >
             <Image
               src={"/prime.webp"}
-              alt="hotstar"
+              alt="prime"
               fill
               className="object-contain rounded p-2 border-[#1998FF] border-3"
               onMouseEnter={(e) => {
@@ -155,9 +160,15 @@ export default function Home() {
           </Link>
         </div>
       </div>
+
+      {/* Content Sections */}
       <HomeContentCards title="Popular on Netflix" content={netflixContent} />
       <HomeContentCards title="Popular on PrimeVideo" content={primeContent} />
       <HomeContentCards title="Popular on Hotstar" content={hotstarContent} />
+      <JoinModal
+        isOpen={showJoinModal}
+        onClose={() => setShowJoinModal(false)}
+      />
     </div>
   );
 }
