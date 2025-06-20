@@ -1,8 +1,5 @@
 "use client";
 import Image from "next/image";
-import netflixData from "../data/netflix_content.json";
-import primeData from "../data/prime_video_content.json";
-import hotstarData from "../data/hotstar_content.json";
 import gsap from "gsap";
 import Link from "next/link";
 import HomeContentCards from "@/components/home_content_cards";
@@ -12,6 +9,7 @@ import {
   getContentNetflix,
   getContentPrime,
 } from "@/lib/content";
+import JoinModal from "@/components/join_modal";
 
 export default function Home() {
   const [content, setContent] = useState({
@@ -20,6 +18,29 @@ export default function Home() {
     hotstar: [],
   });
   const [loading, setLoading] = useState(true);
+  const [showJoinModal, setShowJoinModal] = useState(false);
+  const [heroIndex, setHeroIndex] = useState(0);
+  const heroRef = useRef(null);
+
+  const handleJoinRoom = () => {
+    setShowJoinModal(true);
+  };
+
+  const imageRef = useRef(null);
+useEffect(() => {
+  if (imageRef.current) {
+    gsap.fromTo(
+      imageRef.current,
+      { opacity: 0 },
+      {
+        opacity: 1,
+        duration: 1.2,
+        ease: "power2.inOut",
+      }
+    );
+  }
+}, [heroIndex]);
+
 
   useEffect(() => {
     async function fetchAllContent() {
@@ -39,27 +60,48 @@ export default function Home() {
         });
       } catch (error) {
         console.error("Error fetching content:", error);
-	setLoading(false);
       } finally {
-	setLoading(false);
+        setLoading(false);
       }
     }
 
     fetchAllContent();
   }, []);
 
-  let netflixContent = content.netflix.content;
-  let hotstarContent = content.hotstar.content;
-  let primeContent = content.prime.content;
+  
 
-  let loadingRef = useRef(null);
+  useEffect(() => {
+  if (heroRef.current) {
+    gsap.fromTo(
+      heroRef.current,
+      { opacity: 0 },
+      {
+        opacity: 1,
+        duration: 1,
+        ease: "power2.inOut",
+      }
+    );
+  }
+}, [heroIndex]);
+
+
+  useEffect(() => {
+    if (content.netflix.content?.length === 0) return;
+
+    const interval = setInterval(() => {
+      setHeroIndex((prev) => (prev + 1) % content.netflix.content.length);
+    }, 7000);
+
+    return () => clearInterval(interval);
+  }, [content.netflix]);
+
+  let netflixContent = content.netflix.content || [];
+  let hotstarContent = content.hotstar.content || [];
+  let primeContent = content.prime.content || [];
 
   if (loading) {
     return (
-      <div
-        ref={loadingRef}
-        className="bg-black flex min-h-screen w-full items-center justify-center"
-      >
+      <div className="bg-black flex min-h-screen w-full items-center justify-center">
         <Image
           src={"./FIRE-TV-2024.svg"}
           alt="fireTV"
@@ -72,8 +114,11 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-screen bg-black space-y-4">
-      <div className="relative inset-0 aspect-16/6">
-        <div className="absolute z-1 p-8">
+      <div
+        ref={heroRef}
+        className="relative inset-0 aspect-16/6 transition-opacity duration-1000 ease-in-out"
+      >
+        <div className="absolute z-10 p-8">
           <Image
             src={"./FIRE-TV-2024.svg"}
             alt="fireTV"
@@ -81,26 +126,38 @@ export default function Home() {
             height={100}
           />
         </div>
-        <Image
-          src={netflixContent[0].backdrop_url}
-          alt={netflixContent[0].title}
-          fill
-          className="object-cover"
-        />
-        <div className="absolute bottom-0 p-4 px-8 z-1 text-peri">
-          <h1 className="text-white font-inter font-bold text-2xl mb-6">
-            {netflixContent[0].title}
-          </h1>
-          <p className="font-inter text-white text-sm overflow-auto max-w-1/2">
-            {netflixContent[0].overview}
-          </p>
-        </div>
+        {netflixContent[heroIndex] && (
+          <>
+            <Image
+              ref={imageRef}
+              src={netflixContent[heroIndex].backdrop_url}
+              alt={netflixContent[heroIndex].title}
+              fill
+              className="object-fill transition-opacity duration-2000 ease-in-out"
+            />
+            <div className="absolute bottom-0 p-4 px-8 z-10">
+              <h1 className="text-white font-inter font-bold text-2xl mb-6">
+                {netflixContent[heroIndex].title}
+              </h1>
+              <p className="font-inter text-white text-sm overflow-auto max-w-1/2">
+                {netflixContent[heroIndex].overview}
+              </p>
+            </div>
+          </>
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-black/30" />
       </div>
+
       <div className="flex justify-between items-center px-8">
-        <div>
-          <p className="font-inter text-[#D8DCFF] text-2xl font-bold">Home</p>
+        <div className="flex space-x-4">
+          <button
+            onClick={handleJoinRoom}
+            className="font-inter text-[#D8DCFF] text-lg font-bold border rounded p-2 cursor-pointer hover:underline"
+          >
+            <span>Join Room</span>
+          </button>
         </div>
+
         <div className="flex grow items-center gap-4 justify-end">
           <Link href="/netflix" className="relative w-30 h-20 cursor-pointer">
             <Image
@@ -122,7 +179,7 @@ export default function Home() {
           >
             <Image
               src={"/prime.webp"}
-              alt="hotstar"
+              alt="prime"
               fill
               className="object-contain rounded p-2 border-[#1998FF] border-3"
               onMouseEnter={(e) => {
@@ -149,9 +206,14 @@ export default function Home() {
           </Link>
         </div>
       </div>
+
       <HomeContentCards title="Popular on Netflix" content={netflixContent} />
       <HomeContentCards title="Popular on PrimeVideo" content={primeContent} />
       <HomeContentCards title="Popular on Hotstar" content={hotstarContent} />
+      <JoinModal
+        isOpen={showJoinModal}
+        onClose={() => setShowJoinModal(false)}
+      />
     </div>
   );
 }
