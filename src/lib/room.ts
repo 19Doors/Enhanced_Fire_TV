@@ -1,6 +1,7 @@
 "use server";
 
-let init_url = "http://localhost:8080";
+let init_url = "http://localhost:3002";
+// let init_url = "http://127.0.0.1:8000";
 export async function createRoom(room_name, content_id, content) {
   let toSend = {
     host_user_id: "sakaar",
@@ -9,12 +10,15 @@ export async function createRoom(room_name, content_id, content) {
     content: content
   };
   console.log(toSend);
-  let response = await fetch(init_url + "/social-viewing/create-room", {
+  let response = await fetch(init_url + "/create-room", {
+  // let response = await fetch(init_url + "/create-room", {
     method: "POST",
     headers: { "Content-type": "application/json" },
     body: JSON.stringify(toSend),
   });
+  console.log(response)
   const data = await response.json();
+  console.log("DATA RE")
   console.log(data);
   return data;
 }
@@ -25,7 +29,8 @@ export async function joinRoom(room_code) {
     user_id: "guest",
   };
   console.log(toSend);
-  let response = await fetch(init_url + "/social-viewing/join-room", {
+  // let response = await fetch(init_url + "/social-viewing/join-room", {
+  let response = await fetch(init_url + "/join-room", {
     method: "POST",
     headers: { "Content-type": "application/json" },
     body: JSON.stringify(toSend),

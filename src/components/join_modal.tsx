@@ -1,8 +1,10 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { Pause, Play, SkipBack, SkipForward } from "lucide-react";
 import gsap from "gsap";
 import Image from "next/image";
 import { createRoom, joinRoom } from "@/lib/room";
+import { toast } from "./toast";
 
 const JoinModal = ({ isOpen, onClose }) => {
   const modalRef = useRef(null);
@@ -11,10 +13,14 @@ const JoinModal = ({ isOpen, onClose }) => {
   const wsRef = useRef(null);
 
   const [roomCode, setRoomCode] = useState("");
+  const [roomName, setRoomName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [joinedRoom, setJoinedRoom] = useState(false);
   const [content, setContent] = useState({});
   const [isConnect, setIsConnected] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
 
   useEffect(() => {
     if (isOpen) {
@@ -55,14 +61,58 @@ const JoinModal = ({ isOpen, onClose }) => {
     }
   }, [isOpen]);
 
+  useEffect(() => {
+    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+      wsRef.current.send(
+        JSON.stringify({
+          type: "playback_sync",
+          is_playing: isPlaying,
+          currentTime: currentTime,
+        }),
+      );
+      console.log("sent");
+    }
+  }, [isPlaying]);
+
+  useEffect(() => {
+    let interval = null;
+    if (isPlaying) {
+      interval = setInterval(() => {
+        setCurrentTime((prev) => {
+          const newTime = prev + 1;
+          const totalSeconds = (content.runtime || 120) * 60;
+          const newProgress = (newTime / totalSeconds) * 100;
+          setProgress(Math.min(newProgress, 100));
+          return newTime;
+        });
+      }, 1000); // Update every 100ms for smooth animation
+      return () => clearInterval(interval);
+    }
+  }, [isPlaying]);
+
+  const formatRuntime = (minutes: number) => {
+    if (!minutes) return "Unknown";
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return `${hours}h ${mins}m`;
+  };
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  };
+
   const handleBackdropClick = (e) => {
     if (e.target === e.currentTarget) {
-      wsRef.current.close()
+      wsRef.current.close();
       setRoomCode("");
       setIsLoading(false);
       setJoinedRoom(false);
       setContent({});
       onClose();
+      setCurrentTime(0);
+      setIsPlaying(false);
+      setProgress(0);
     }
   };
 
@@ -79,35 +129,64 @@ const JoinModal = ({ isOpen, onClose }) => {
       const data = await joinRoom(roomCode);
       if (data.success) {
         setContent(data.room.content);
-	connectWebSocket();
+        setRoomName(data.room.room_name);
+        connectWebSocket();
       }
     } catch (error) {}
     setIsLoading(false);
     setJoinedRoom(true);
   };
 
+  const updateTime = () => {
+    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+      wsRef.current.send(
+        JSON.stringify({
+          type: "playback_sync",
+          is_playing: isPlaying,
+          currentTime: currentTime,
+        }),
+      );
+      console.log("sent");
+    }
+  };
+
   const connectWebSocket = () => {
-    const wsUrl = `ws://localhost:8080/social-viewing/ws/watch/${roomCode}`;
+    // const wsUrl = `ws://127.0.0.1:8000/ws/watch/${roomCode}`;
+    const wsUrl = `ws://localhost:3002/ws/watch/${roomCode}`;
     wsRef.current = new WebSocket(wsUrl);
-    console.log("connected!")
+    console.log("connected!");
 
     wsRef.current.onopen = () => {
-      setIsConnected(true)
+      setIsConnected(true);
     };
 
     wsRef.current.onmessage = (event) => {
       const message = JSON.parse(event.data);
-      console.log(message)
-    }
+      console.log(message);
+      if (message.type == "playback_sync") {
+        setIsPlaying(message.is_playing);
+        setCurrentTime(message.current_time);
+      }
+      if (message.type == "user_joined") {
+        toast({
+          title: "Someone Connected",
+        });
+      }
+      if (message.type == "user_left") {
+        toast({
+          title: "Someone left",
+        });
+      }
+      console.log(message);
+    };
 
     wsRef.current.onclose = () => {
       setIsConnected(false);
-      console.log("disconnected")
-    }
+      console.log("disconnected");
+    };
   };
 
-  const handleWebSocketMessage = (message) => {
-  }
+  const handleWebSocketMessage = (message) => {};
 
   if (!isOpen) return null;
 
@@ -137,12 +216,58 @@ const JoinModal = ({ isOpen, onClose }) => {
               />
             </div>
 
-            <div className="w-2/3 h-full flex flex-col">
+            <div className="w-full h-full flex flex-col">
               <div className="w-full h-full p-4 flex flex-col space-y-2">
                 <h1 className="font-inter text-white text-2xl font-bold ">
-                  {content.title} ({content.release_date.slice(0, 4)})
+                  Party: {roomName}
+                </h1>
+                <h1 className="font-inter text-white text-xl font-bold ">
+                  {content.title}
                 </h1>
                 <div className="flex flex-col space-y-2 font-bold"></div>
+              </div>
+              <div className="h-full justify-center flex flex-col w-full space-y-4 p-4">
+                <div className="w-full border border-white rounded h-2">
+                  <div
+                    className="bg-white h-2 rounded"
+                    style={{ width: `${progress}%` }}
+                  />
+                </div>
+                <div className="flex space-x-4 items-center cursor-pointer flex justify-center">
+                  <div
+                    onClick={() => {
+                      setCurrentTime((prev) => Math.max(0, prev - 10));
+                      updateTime();
+                    }}
+                  >
+                    <SkipBack size={28} color="#ffffff" />
+                  </div>
+                  {!isPlaying && (
+                    <div onClick={() => setIsPlaying(true)}>
+                      <Play size={28} color="#ffffff" />
+                    </div>
+                  )}
+                  {isPlaying && (
+                    <div onClick={() => setIsPlaying(false)}>
+                      <Pause size={28} color="#ffffff" />
+                    </div>
+                  )}
+
+                  <div
+                    onClick={() => {
+                      setCurrentTime((prev) =>
+                        Math.min(prev + 10, content.runtime * 60),
+                      );
+                      updateTime();
+                    }}
+                  >
+                    <SkipForward size={28} color="#ffffff" />
+                  </div>
+                </div>
+                <div className="flex justify-between text-white text-sm mb-4">
+                  <span>{formatTime(currentTime)}</span>
+                  <span>{formatRuntime(content.runtime)}</span>
+                </div>
               </div>
             </div>
           </div>
