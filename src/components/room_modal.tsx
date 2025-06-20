@@ -5,6 +5,7 @@ import gsap from "gsap";
 import Image from "next/image";
 import { createRoom } from "@/lib/room";
 import { toast } from "./toast";
+import { backend_social, ws_social } from "@/lib/urls";
 
 const RoomModal = ({ isOpen, onClose, mode, content }) => {
   const modalRef = useRef(null);
@@ -158,7 +159,7 @@ const RoomModal = ({ isOpen, onClose, mode, content }) => {
 
   const connectWebSocket = (room_id: string) => {
     // const wsUrl = `ws://127.0.0.1:8000/ws/watch/${room_id}`;
-    const wsUrl = `ws://34.47.135.240:3002/ws/watch/${room_id}`;
+    const wsUrl = `ws://${ws_social}/ws/watch/${room_id}`;
     wsRef.current = new WebSocket(wsUrl);
     wsRef.current.onopen = () => {
       console.log("connected!");
