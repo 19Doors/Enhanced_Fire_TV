@@ -152,9 +152,16 @@ const ContentModal = ({ content, isOpen, onClose }) => {
             {!isSimulating && (
               <div className="w-2/3 h-full flex flex-col">
                 <div className="w-full h-full p-4 flex flex-col space-y-2">
-                  <h1 className="font-inter text-white text-2xl font-bold ">
-                    {content.title} ({content.release_date.slice(0, 4)})
-                  </h1>
+                  {content.release_date && (
+                    <h1 className="font-inter text-white text-2xl font-bold ">
+                      {content.title} ({content.release_date.slice(0, 4)})
+                    </h1>
+                  )}
+                  {!content.release_date && (
+                    <h1 className="font-inter text-white text-2xl font-bold ">
+                      {content.title}
+                    </h1>
+                  )}
                   <div className="flex flex-col space-y-2 font-bold">
                     <div className="flex space-x-4 items-end">
                       <div className="flex space-x-2 items-center">
@@ -252,7 +259,10 @@ const ContentModal = ({ content, isOpen, onClose }) => {
                       gsap.to(e.currentTarget, { scale: 1.0, duration: 0.2 });
                     }}
                   >
-                    <p className="font-bold font-inter text-white capitalize" onClick={()=>handleCreateRoom()}>
+                    <p
+                      className="font-bold font-inter text-white capitalize"
+                      onClick={() => handleCreateRoom()}
+                    >
                       <UserRoundPlus color="#ffffff" />
                     </p>
                   </div>
@@ -352,7 +362,7 @@ const ContentModal = ({ content, isOpen, onClose }) => {
         isOpen={showRoomModal}
         onClose={() => setShowRoomModal(false)}
         mode={roomMode}
-	content={content}
+        content={content}
       />
     </div>
   );

@@ -8,6 +8,7 @@ import {
   getContentHotstar,
   getContentNetflix,
   getContentPrime,
+  getContentRecommended,
 } from "@/lib/content";
 import JoinModal from "@/components/join_modal";
 
@@ -16,6 +17,7 @@ export default function Home() {
     netflix: [],
     prime: [],
     hotstar: [],
+    recommendation: [],
   });
   const [loading, setLoading] = useState(true);
   const [showJoinModal, setShowJoinModal] = useState(false);
@@ -28,17 +30,19 @@ export default function Home() {
     async function fetchAllContent() {
       try {
         setLoading(true);
-        const [netflixContent, primeContent, hotstarContent] =
+        const [netflixContent, primeContent, hotstarContent, recommendations] =
           await Promise.all([
             getContentNetflix(),
             getContentPrime(),
             getContentHotstar(),
+	    getContentRecommended()
           ]);
 
         setContent({
           netflix: netflixContent,
           prime: primeContent,
           hotstar: hotstarContent,
+	  recommendation: recommendations
         });
       } catch (error) {
         console.error("Error fetching content:", error);
@@ -53,6 +57,7 @@ export default function Home() {
   let netflixContent = content.netflix.content || [];
   let hotstarContent = content.hotstar.content || [];
   let primeContent = content.prime.content || [];
+  let recommendations = content.recommendation.content || [];
 
   if (loading) {
     return (
@@ -162,6 +167,9 @@ export default function Home() {
       </div>
 
       {/* Content Sections */}
+      {recommendations.length!=0 && (
+      <HomeContentCards title="Recommendations" content={recommendations} />
+      )}
       <HomeContentCards title="Popular on Netflix" content={netflixContent} />
       <HomeContentCards title="Popular on PrimeVideo" content={primeContent} />
       <HomeContentCards title="Popular on Hotstar" content={hotstarContent} />
