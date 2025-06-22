@@ -25,6 +25,7 @@ Building an Enhanced Fire TV Experience that breaks content silos by providing i
 - **API Gateway**: Tyk Open Source for request routing and management
 - **Event-Driven Communication**: Apache Kafka for real-time messaging
 - **Multi-Database Strategy**: MongoDB, PostgreSQL, Redis, ClickHouse
+- **Link:** https://github.com/19Doors/enhnced_fire_tv_backend
 
 ### Infrastructure
 - **Containerization**: Docker for all services
