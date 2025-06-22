@@ -2,18 +2,18 @@
 
 An intelligent Fire TV platform that transforms content discovery through AI-driven cross-platform recommendations, social viewing, and proactive entertainment planning. The system unifies Netflix, Prime Video, and Hotstar into one seamless interface.
 
-## 🚀 Project Overview
+## Project Overview
 
 Building an Enhanced Fire TV Experience that breaks content silos by providing intelligent recommendations across multiple streaming platforms. Users can discover Prime Video content while watching Netflix, get mood-aware suggestions, and enjoy synchronized social viewing experiences.
 
-### 🎯 Core Innovation
+### Core Innovation
 
 - **Cross-Platform Intelligence**: Breaks content silos by recommending Prime Video content to Netflix users based on viewing patterns
 - **Mood-Aware Recommendations**: AI detects emotional state and suggests contextually appropriate content  
 - **Temporal Personalization**: Time-of-day and routine-based content suggestions
 - **Social Viewing**: Synchronized multi-device viewing with real-time chat
 
-## 🏗️ Architecture
+## Architecture
 
 ### Frontend Layer
 - **Fire TV Frontend**: Next.js with Zustand for state management
@@ -31,7 +31,7 @@ Building an Enhanced Fire TV Experience that breaks content silos by providing i
 - **Service Discovery**: Docker networking with health checks
 - **Scalability**: Independent service scaling
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 **Frontend:**
 - Next.js 14
@@ -55,7 +55,7 @@ Building an Enhanced Fire TV Experience that breaks content silos by providing i
 - Apache Kafka & Zookeeper
 
 
-## 🔄 Event-Driven Architecture
+## Event-Driven Architecture
 
 The system uses Apache Kafka for asynchronous communication between services:
 
@@ -77,7 +77,7 @@ kafka_producer.send('content-updated', {
 # Analytics Service tracks content popularity
 ```
 
-## 🎮 Fire TV Frontend Integration
+## Fire TV Frontend Integration
 
 The frontend is optimized for Fire TV remote navigation:
 
@@ -99,7 +99,7 @@ const handleContentClick = async (contentItem) => {
 };
 ```
 
-## 🏆 Amazon Hackathon 2025
+## Amazon Hackathon 2025
 
 This project is being developed for Amazon Hackathon 2025, showcasing innovative approaches to content discovery and social viewing experiences on Fire TV platforms.
 ---
