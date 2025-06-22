@@ -30,6 +30,12 @@ const HomeContentCards = ({
     setIsModalOpen(false);
     setSelectedContent(null);
   };
+  function capitalizeFirstLetter(strin: string) {
+    if(strin) {
+    return strin.charAt(0).toUpperCase() + strin.slice(1);
+
+    }else return "";
+  }
   return (
     <>
       <div
@@ -50,18 +56,25 @@ const HomeContentCards = ({
               onClick={() => handleCardClick(item)}
             >
               {item.backdrop_url && (
+		<div>
                 <Image
                   src={item.backdrop_url}
                   alt={item.title}
                   fill
                   className="object-cover rounded"
                 />
+
+	      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/10 to-black/20" />
+	      </div>
               )}
               {showGradient && (
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-black/20" />
               )}
               {showTitle && (
-                <div className="absolute bottom-2 left-2 right-2">
+                <div className="flex flex-col absolute bottom-2 left-2 right-2">
+                  <p className="font-bold font-inter text-sm truncate text-xl">
+                    {capitalizeFirstLetter(item.platform)}
+                  </p>
                   <p className="font-bold font-inter text-sm truncate">
                     {item.title}
                   </p>
