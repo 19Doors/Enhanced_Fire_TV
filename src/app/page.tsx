@@ -76,7 +76,7 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-black space-y-4">
       {/* Hero Section */}
-      <div className="relative inset-0 aspect-16/6">
+      <div className="relative h-full inset-0 aspect-16/6">
         <div className="absolute z-10 p-8">
           <Image
             src={"./FIRE-TV-2024.svg"}
@@ -86,7 +86,7 @@ export default function Home() {
           />
         </div>
         {netflixContent[0] && (
-          <>
+          <div>
             <Image
               src={netflixContent[0].backdrop_url}
               alt={netflixContent[0].title}
@@ -101,7 +101,7 @@ export default function Home() {
                 {netflixContent[0].overview}
               </p>
             </div>
-          </>
+          </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-black/30" />
       </div>
