@@ -98,10 +98,6 @@ const handleContentClick = async (contentItem) => {
   setIsModalOpen(true);
 };
 ```
-
-## Amazon Hackathon 2025
-
-This project is being developed for Amazon Hackathon 2025, showcasing innovative approaches to content discovery and social viewing experiences on Fire TV platforms.
 ---
 
 **Built with ❤️ for Amazon Hackathon 2025**
