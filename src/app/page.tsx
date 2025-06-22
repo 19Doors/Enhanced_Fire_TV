@@ -58,6 +58,7 @@ export default function Home() {
   let hotstarContent = content.hotstar.content || [];
   let primeContent = content.prime.content || [];
   let recommendations = content.recommendation.content || [];
+  let moreRecommendations = content.recommendation.content?.slice(6) || [];
 
   if (loading) {
     return (
@@ -168,7 +169,10 @@ export default function Home() {
 
       {/* Content Sections */}
       {recommendations.length!=0 && (
+	<div>
       <HomeContentCards title="Recommendations" content={recommendations} />
+      <HomeContentCards title="" content={moreRecommendations} />
+      </div>
       )}
       <HomeContentCards title="Popular on Netflix" content={netflixContent} />
       <HomeContentCards title="Popular on PrimeVideo" content={primeContent} />

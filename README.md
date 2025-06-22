@@ -1,36 +1,107 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Fire TV Enhanced Experience - Amazon Hackathon 2025
 
-## Getting Started
+An intelligent Fire TV platform that transforms content discovery through AI-driven cross-platform recommendations, social viewing, and proactive entertainment planning. The system unifies Netflix, Prime Video, and Hotstar into one seamless interface.
 
-First, run the development server:
+## 🚀 Project Overview
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Building an Enhanced Fire TV Experience that breaks content silos by providing intelligent recommendations across multiple streaming platforms. Users can discover Prime Video content while watching Netflix, get mood-aware suggestions, and enjoy synchronized social viewing experiences.
+
+### 🎯 Core Innovation
+
+- **Cross-Platform Intelligence**: Breaks content silos by recommending Prime Video content to Netflix users based on viewing patterns
+- **Mood-Aware Recommendations**: AI detects emotional state and suggests contextually appropriate content  
+- **Temporal Personalization**: Time-of-day and routine-based content suggestions
+- **Social Viewing**: Synchronized multi-device viewing with real-time chat
+
+## 🏗️ Architecture
+
+### Frontend Layer
+- **Fire TV Frontend**: Next.js with Zustand for state management
+- **Static Export**: Optimized for Fire TV deployment
+- **Hardware Acceleration**: Smooth TV experience with GSAP animations
+
+### Backend Layer
+- **Microservices Architecture**: 4 independent Python FastAPI services
+- **API Gateway**: Tyk Open Source for request routing and management
+- **Event-Driven Communication**: Apache Kafka for real-time messaging
+- **Multi-Database Strategy**: MongoDB, PostgreSQL, Redis, ClickHouse
+
+### Infrastructure
+- **Containerization**: Docker for all services
+- **Service Discovery**: Docker networking with health checks
+- **Scalability**: Independent service scaling
+
+## 🛠️ Tech Stack
+
+**Frontend:**
+- Next.js 14
+- Zustand (State Management)
+- GSAP (Animations)
+- Tailwind CSS
+
+**Backend:**
+- Python FastAPI
+- Tyk API Gateway
+- Apache Kafka
+
+**Databases:**
+- MongoDB (Content Storage)
+- PostgreSQL (User Profiles)
+- Redis (Caching)
+- ClickHouse (Analytics)
+
+**Infrastructure:**
+- Docker & Docker Compose
+- Apache Kafka & Zookeeper
+
+
+## 🔄 Event-Driven Architecture
+
+The system uses Apache Kafka for asynchronous communication between services:
+
+### Key Event Topics
+- `user-interactions` - User behavior tracking
+- `recommendations-generated` - AI-generated recommendations
+
+### Event Flow Example
+```python
+# Content Aggregation publishes new content
+kafka_producer.send('content-updated', {
+    'event_type': 'tmdb_sync_completed',
+    'new_content_count': 150,
+    'platforms': ['netflix', 'primevideo', 'hotstar']
+})
+
+# AI Recommendation Service consumes and updates recommendations
+# Social Viewing Service notifies active users
+# Analytics Service tracks content popularity
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🎮 Fire TV Frontend Integration
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The frontend is optimized for Fire TV remote navigation:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```javascript
+const handleContentClick = async (contentItem) => {
+  await trackUserInteraction({
+    type: 'click',
+    contextdata: {
+      id: contentItem.id,
+      title: contentItem.title,
+      platform: contentItem.platform,
+      rating: contentItem.rating
+    }
+  });
+  
+  // Open content modal with GSAP animations
+  setSelectedContent(contentItem);
+  setIsModalOpen(true);
+};
+```
 
-## Learn More
+## 🏆 Amazon Hackathon 2025
 
-To learn more about Next.js, take a look at the following resources:
+This project is being developed for Amazon Hackathon 2025, showcasing innovative approaches to content discovery and social viewing experiences on Fire TV platforms.
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Built with ❤️ for Amazon Hackathon 2025**
