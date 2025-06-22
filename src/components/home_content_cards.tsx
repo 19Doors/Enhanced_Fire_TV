@@ -1,20 +1,25 @@
 import gsap from "gsap";
 import Image from "next/image";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import ContentModal from "./basicComponents";
 import { userInteraction } from "@/lib/content";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+
+import "tailwind-scrollbar-hide";
 
 const HomeContentCards = ({
   title,
   content,
-  itemWidth = "w-71",
+  itemWidth = "w-72", // standard card width
   itemHeight = "h-40",
   showGradient = true,
   showTitle = true,
   className = "",
 }) => {
+  const scrollRef = useRef(null);
   const [selectedContent, setSelectedContent] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [hovering, setHovering] = useState(false);
 
   const handleCardClick = async (item) => {
     setSelectedContent(item);
@@ -22,68 +27,98 @@ const HomeContentCards = ({
     let interaction = {
       content_id: item.id,
       context_data: item,
-      type: "click"
-    }
+      type: "click",
+    };
     await userInteraction(interaction);
   };
+
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedContent(null);
   };
-  function capitalizeFirstLetter(strin: string) {
-    if(strin) {
-    return strin.charAt(0).toUpperCase() + strin.slice(1);
 
-    }else return "";
+  const scrollLeft = () => {
+    const container = scrollRef.current;
+    container.scrollBy({ left: -container.offsetWidth, behavior: "smooth" });
+  };
+
+  const scrollRight = () => {
+    const container = scrollRef.current;
+    container.scrollBy({ left: container.offsetWidth, behavior: "smooth" });
+  };
+  function capitalizeFirstLetter(string:string) {
+      return string[0].toUpperCase() + string.slice(1);
   }
+
   return (
     <>
       <div
-        className={`flex flex-col font-inter text-white font-bold px-8 text-xl pb-4 ${className}`}
+        className={`relative group font-inter text-white font-bold px-8 text-xl pb-4 ${className}`}
+        onMouseEnter={() => setHovering(true)}
+        onMouseLeave={() => setHovering(false)}
       >
         <h1 className="mb-4">{title}</h1>
-        <div className="flex space-x-2 overflow-x-hidden overflow-y-hidden">
-          {content.map((item) => (
-            <div
-              key={item.id}
-              className={`flex-shrink-0 relative cursor-pointer ${itemWidth} ${itemHeight}`}
-              onMouseEnter={(e) => {
-                gsap.to(e.currentTarget, { scale: 1.1 });
-              }}
-              onMouseLeave={(e) => {
-                gsap.to(e.currentTarget, { scale: 1 });
-              }}
-              onClick={() => handleCardClick(item)}
-            >
-              {item.backdrop_url && (
-		<div>
-                <Image
-                  src={item.backdrop_url}
-                  alt={item.title}
-                  fill
-                  className="object-cover rounded"
-                />
+        {/* Scroll Container */}
+        <div className="relative">
+          <div
+            ref={scrollRef}
+            className="flex space-x-4 overflow-x-auto scrollbar-hide scroll-smooth transition-all duration-300"
+          >
+            {content.map((item) => (
+              <div
+                key={item.id}
+                className={`flex-shrink-0 relative cursor-pointer ${itemWidth} ${itemHeight}`}
+                onMouseEnter={(e) => gsap.to(e.currentTarget, { scale: 1.1 })}
+                onMouseLeave={(e) => gsap.to(e.currentTarget, { scale: 1 })}
+                onClick={() => handleCardClick(item)}
+              >
+                {item.backdrop_url && (
+                  <Image
+                    src={item.backdrop_url}
+                    alt={item.title}
+                    fill
+                    className="object-cover rounded"
+                  />
+                )}
+                {showGradient && (
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-black/20" />
+                )}
+                {showTitle && (
+                  <div className="absolute bottom-2 left-2 right-2">
+                    <p className="font-bold font-inter text-lg truncate">
+		    {capitalizeFirstLetter(item.platform)}
+                    </p>
+                    <p className="font-bold font-inter text-sm truncate">
+                      {item.title}
+                    </p>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
 
-	      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/10 to-black/20" />
-	      </div>
-              )}
-              {showGradient && (
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-black/20" />
-              )}
-              {showTitle && (
-                <div className="flex flex-col absolute bottom-2 left-2 right-2">
-                  <p className="font-bold font-inter text-sm truncate text-xl">
-                    {capitalizeFirstLetter(item.platform)}
-                  </p>
-                  <p className="font-bold font-inter text-sm truncate">
-                    {item.title}
-                  </p>
-                </div>
-              )}
-            </div>
-          ))}
+          {/* Left Arrow */}
+          {hovering && (
+            <button
+              onClick={scrollLeft}
+              className="absolute top-1/2 -translate-y-1/2 left-0 z-10 bg-black bg-opacity-50 p-2 rounded-full hover:bg-opacity-80 transition cursor-pointer"
+            >
+              <ChevronLeft size={24} />
+            </button>
+          )}
+
+          {/* Right Arrow */}
+          {hovering && (
+            <button
+              onClick={scrollRight}
+              className="absolute top-1/2 -translate-y-1/2 right-0 z-10 bg-black bg-opacity-50 p-2 rounded-full hover:bg-opacity-80 transition cursor-pointer"
+            >
+              <ChevronRight size={24} />
+            </button>
+          )}
         </div>
       </div>
+
       <ContentModal
         content={selectedContent}
         onClose={handleCloseModal}

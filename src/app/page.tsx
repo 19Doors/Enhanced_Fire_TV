@@ -21,10 +21,27 @@ export default function Home() {
   });
   const [loading, setLoading] = useState(true);
   const [showJoinModal, setShowJoinModal] = useState(false);
+  const [heroIndex, setHeroIndex] = useState(0);
+  const heroRef = useRef(null);
 
   const handleJoinRoom = () => {
     setShowJoinModal(true);
   };
+
+  const imageRef = useRef(null);
+  useEffect(() => {
+    if (imageRef.current) {
+      gsap.fromTo(
+        imageRef.current,
+        { opacity: 0 },
+        {
+          opacity: 1,
+          duration: 1.2,
+          ease: "power2.inOut",
+        },
+      );
+    }
+  }, [heroIndex]);
 
   useEffect(() => {
     async function fetchAllContent() {
@@ -35,7 +52,7 @@ export default function Home() {
             getContentNetflix(),
             getContentPrime(),
             getContentHotstar(),
-	    getContentRecommended()
+            getContentRecommended(),
           ]);
 
         setContent({
@@ -54,11 +71,35 @@ export default function Home() {
     fetchAllContent();
   }, []);
 
+  useEffect(() => {
+    if (heroRef.current) {
+      gsap.fromTo(
+        heroRef.current,
+        { opacity: 0 },
+        {
+          opacity: 1,
+          duration: 1,
+          ease: "power2.inOut",
+        },
+      );
+    }
+  }, [heroIndex]);
+
+  useEffect(() => {
+    if (content.netflix.content?.length === 0) return;
+
+    const interval = setInterval(() => {
+      setHeroIndex((prev) => (prev + 1) % content.netflix.content.length);
+    }, 7000);
+
+    return () => clearInterval(interval);
+  }, [content.netflix]);
+
   let netflixContent = content.netflix.content || [];
   let hotstarContent = content.hotstar.content || [];
   let primeContent = content.prime.content || [];
   let recommendations = content.recommendation.content || [];
-  let moreRecommendations = content.recommendation.content?.slice(6) || [];
+  // let moreRecommendations = content.recommendation.content?.slice(6) || [];
 
   if (loading) {
     return (
@@ -75,8 +116,10 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-screen bg-black space-y-4">
-      {/* Hero Section */}
-      <div className="relative h-full inset-0 aspect-16/6">
+      <div
+        ref={heroRef}
+        className="relative inset-0 aspect-16/6 transition-opacity duration-1000 ease-in-out"
+      >
         <div className="absolute z-10 p-8">
           <Image
             src={"./FIRE-TV-2024.svg"}
@@ -85,28 +128,28 @@ export default function Home() {
             height={100}
           />
         </div>
-        {netflixContent[0] && (
-          <div>
+        {netflixContent[heroIndex] && (
+          <>
             <Image
-              src={netflixContent[0].backdrop_url}
-              alt={netflixContent[0].title}
+              ref={imageRef}
+              src={netflixContent[heroIndex].backdrop_url}
+              alt={netflixContent[heroIndex].title}
               fill
-              className="object-cover"
+              className="object-cover transition-opacity duration-2000 ease-in-out"
             />
             <div className="absolute bottom-0 p-4 px-8 z-10">
               <h1 className="text-white font-inter font-bold text-2xl mb-6">
-                {netflixContent[0].title}
+                {netflixContent[heroIndex].title}
               </h1>
               <p className="font-inter text-white text-sm overflow-auto max-w-1/2">
-                {netflixContent[0].overview}
+                {netflixContent[heroIndex].overview}
               </p>
             </div>
-          </div>
+          </>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-black/30" />
       </div>
 
-      {/* Navigation Bar */}
       <div className="flex justify-between items-center px-8">
         <div className="flex space-x-4">
           <button
@@ -117,7 +160,6 @@ export default function Home() {
           </button>
         </div>
 
-        {/* Platform Links */}
         <div className="flex grow items-center gap-4 justify-end">
           <Link href="/netflix" className="relative w-30 h-20 cursor-pointer">
             <Image
@@ -166,13 +208,10 @@ export default function Home() {
           </Link>
         </div>
       </div>
-
-      {/* Content Sections */}
-      {recommendations.length!=0 && (
-	<div>
-      <HomeContentCards title="Recommendations" content={recommendations} />
-      <HomeContentCards title="" content={moreRecommendations} />
-      </div>
+      {recommendations.length != 0 && (
+        <div>
+          <HomeContentCards title="Recommendations" content={recommendations} />
+        </div>
       )}
       <HomeContentCards title="Popular on Netflix" content={netflixContent} />
       <HomeContentCards title="Popular on PrimeVideo" content={primeContent} />

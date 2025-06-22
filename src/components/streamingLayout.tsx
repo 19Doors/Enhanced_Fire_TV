@@ -71,10 +71,10 @@ export default function StreamingLayout({
   }
 
   return (
-    <>
-      <div className="min-h-screen bg-black">
+    <div className="bg-black">
+      <div className="h-screen bg-black">
         <div
-          className="relative h-100 mb-8 cursor-pointer"
+          className="relative h-10/11 mb-8 cursor-pointer"
           onClick={() => handleCardClick(currentContent)}
         >
           <Image
@@ -99,7 +99,7 @@ export default function StreamingLayout({
           </div>
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-black/30" />
         </div>
-        <div className="px-8 pb-8">
+        <div className="px-8 pb-8 bg-black">
           <h2 className="font-inter text-xl font-bold text-background">
             Popular on {config.name}
           </h2>
@@ -134,6 +134,6 @@ export default function StreamingLayout({
         onClose={handleCloseModal}
         isOpen={isModalOpen}
       />
-    </>
+    </div>
   );
 }
